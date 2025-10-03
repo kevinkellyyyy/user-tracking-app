@@ -1,11 +1,17 @@
-import { useEffect, useState } from "react";
+import { LocationData } from "@/types";
+import { useEffect, useState, useCallback, useMemo } from "react";
 
-export function useGeolocation() {
+export function useGeolocation({
+  username,
+  userUuid,
+}: {
+  username: string;
+  userUuid: string;
+}) {
   const [location, setLocation] = useState<LocationData | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [isTracking, setIsTracking] = useState(false);
 
-  const getLocation = () => {
+  const getLocation = useCallback(() => {
     if (!navigator.geolocation) {
       setError("Geolocation is not supported by this browser.");
       return;
@@ -31,24 +37,23 @@ export function useGeolocation() {
       },
       { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
     );
-  };
+  }, []);
 
   // Handle tracking interval every second
   useEffect(() => {
-    if (!isTracking) return;
+    if (!username || !userUuid) return;
 
     getLocation();
     const interval = setInterval(getLocation, 1000);
     return () => clearInterval(interval);
-  }, [isTracking]);
+  }, [username, userUuid, getLocation]);
 
-  const toggleTracking = () => setIsTracking(!isTracking);
-
-  return {
-    location,
-    error,
-    isTracking,
-    getLocation,
-    toggleTracking,
-  };
+  return useMemo(
+    () => ({
+      location,
+      error,
+      getLocation,
+    }),
+    [location, error, getLocation]
+  );
 }

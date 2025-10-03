@@ -1,44 +1,41 @@
 "use client";
 
-import dynamic from "next/dynamic";
-import { useGeolocation } from "../hooks/useGeolocation";
-
-// Dynamically import both Map and LocationControls to avoid SSR issues
-const Map = dynamic(() => import("../components/Map"), {
-  ssr: false,
-  loading: () => (
-    <div className="mb-4 p-4 bg-gray-100 rounded-lg animate-pulse">
-      Loading map...
-    </div>
-  ),
-});
-
-const LocationControls = dynamic(
-  () => import("../components/LocationControls"),
-  {
-    ssr: false,
-    loading: () => (
-      <div className="mb-4 p-4 bg-gray-100 rounded-lg animate-pulse">
-        Loading location controls...
-      </div>
-    ),
-  }
-);
+import Login from "@/pages/Login";
+import MainApp from "@/pages/MainApp";
+import { useState, useEffect } from "react";
+import { v4 as uuidv4 } from "uuid";
 
 export default function Home() {
-  const geolocation = useGeolocation();
+  const [username, setUsername] = useState<string | null>(null);
+  const [userUuid, setUserUuid] = useState<string | null>(null);
+  const [mounted, setMounted] = useState(false);
 
-  return (
-    <div className="p-4">
-      <h1 className="text-3xl font-bold mb-4">
-        TAKE-HOME TEST: REAL-TIME USER TRACKING APP
-      </h1>
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
-      {/* Location info and controls */}
-      <LocationControls geolocation={geolocation} />
+  const handleLogin = (usernameInput: string) => {
+    const newUuid = uuidv4();
+    setUsername(usernameInput);
+    setUserUuid(newUuid);
+    console.log(`User ${usernameInput} logged in with UUID: ${newUuid}`);
+  };
 
-      {/* Map */}
-      <Map location={geolocation.location} />
-    </div>
+  // Don't render anything until mounted to prevent hydration mismatch
+  if (!mounted) {
+    return (
+      <div className="p-4">
+        <div className="animate-pulse">
+          <div className="h-8 bg-gray-300 rounded mb-4"></div>
+          <div className="h-32 bg-gray-300 rounded"></div>
+        </div>
+      </div>
+    );
+  }
+
+  return username && userUuid ? (
+    <MainApp username={username} userUuid={userUuid} />
+  ) : (
+    <Login onSubmit={handleLogin} />
   );
 }

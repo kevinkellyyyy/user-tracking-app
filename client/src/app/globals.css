@@ -1,1 +1,9 @@
 @import "tailwindcss";
+
+.leaflet-marker-icon,
+.leaflet-marker-shadow,
+.leaflet-popup,
+s {
+  /* follow same timing as the long lat update interval */
+  transition: transform 0.6s ease-out !important;
+}
