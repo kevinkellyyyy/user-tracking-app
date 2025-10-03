@@ -4,8 +4,7 @@ import { MapContainer, TileLayer, useMap } from "react-leaflet";
 import { useEffect, useRef, useState } from "react";
 import "leaflet/dist/leaflet.css";
 import { defaultPin, mainPin, realUserPin } from "@/assets/leafletIcons";
-import { UsersResponse } from "../types/websocket";
-import { LocationData } from "@/types";
+import { LocationData, UsersResponse } from "@/types";
 import UserMarker from "./UserMarker";
 
 interface MapProps {
@@ -15,10 +14,13 @@ interface MapProps {
   otherUserLoc?: UsersResponse;
   fakeUserCount: number;
   followedUserId: string | null;
-  onFollowUser: (userId: string, userData: {
-    id: string;
-    name: string;
-  }) => void;
+  onFollowUser: (
+    userId: string,
+    userData: {
+      id: string;
+      name: string;
+    }
+  ) => void;
   onUnfollowUser: () => void;
 }
 
@@ -153,7 +155,7 @@ export default function Map({
     } else {
       // Find user data to pass to parent
       let userData = null;
-      
+
       if (otherUsers[userId]) {
         // Fake user
         userData = {
@@ -167,7 +169,7 @@ export default function Map({
           name: otherUserLoc[userId].username,
         };
       }
-      
+
       if (userData) {
         onFollowUser(userId, userData);
       }

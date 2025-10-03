@@ -4,10 +4,9 @@ import dynamic from "next/dynamic";
 import { useGeolocation } from "../hooks/useGeolocation";
 import useWebSocket from "react-use-websocket";
 import { useEffect, useRef, useState } from "react";
-import { UsersResponse } from "../types/websocket";
-import ControlPanel from "../components/ControlPanel";
+import { UsersResponse } from "../types";
 
-// Dynamically import both Map and LocationControls to avoid SSR issues
+// Dynamically import both Map and ControlPanel to avoid SSR issues
 const Map = dynamic(() => import("../components/Map"), {
   ssr: false,
   loading: () => (
@@ -15,6 +14,10 @@ const Map = dynamic(() => import("../components/Map"), {
       Loading map...
     </div>
   ),
+});
+
+const ControlPanel = dynamic(() => import("../components/ControlPanel"), {
+  ssr: false,
 });
 
 export default function MainApp({
